@@ -13,13 +13,11 @@ public abstract class Task {
         this.description = description;
         status = TaskType.NEW;
         id = 0; //id==0 is not valid
-    }
-
-    public Task(Task task) {
-        this.title = task.title;
-        this.description = task.description;
-        status = task.status;
-        id = task.id;
+        //Task создается вне менеджера, а значение id ему присваивается только после выполнения его загрузки
+        //в менеджер функцией addTask/addSubTask.
+        //Значение id==0 недопустимо в менеджере, поэтому по умолчанию присваивается полю.
+        //В настоящей реализации программы это не важно - при вызове указанных функций присваивается новое значение,
+        //так сделано только для минимизации возможных ошибок в будущем.
     }
 
     public int toInt() {

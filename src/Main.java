@@ -1,7 +1,6 @@
 import tasks.EpicTask;
 import tasks.SubTask;
 import tasks.Task;
-import types.TaskStaging;
 import types.TaskType;
 
 import java.util.ArrayList;
@@ -15,6 +14,11 @@ public class Main {
 
 
 //Перед добавлением subtask необходимо добавить epic-task
+        //По ТЗ конкретный формат хранения задач не указан -
+        // используются 2 HashMap для хранения эпик-тасков и подзадач. Простая задача рассматривается
+        //как эпик-таск без подзадач. Иначе возникает несоответствие:
+        //если добавил эпик-таск без подзадач, то формально он является не эпик-таском
+        //Т.е. класс Task здесь используется только как абстрактный предок.
 
         EpicTask epicTask = new EpicTask("Дела перед уходом", "То, что надо не забыть сделать перед уходом на работу");
         mng.addTask(epicTask);                                                                                          //2.4
@@ -27,7 +31,7 @@ public class Main {
 
         EpicTask epicTask2 = new EpicTask("Экономить электричество", "");
         mng.addTask(epicTask2);
-        SubTask sTask4 = new SubTask(sTask1, epicTask2);
+        SubTask sTask4 = new SubTask("Дело 3", "", epicTask2);
         SubTask sTask5 = new SubTask("Купить диодные лампы", "Или люминесцентные", epicTask2);
         SubTask sTask6 = new SubTask("Починить проводку", "", epicTask2);
         mng.addSubTask(sTask4);
@@ -37,14 +41,16 @@ public class Main {
         EpicTask epicTask3 = new EpicTask("Сделать дела", "");
         mng.addTask(epicTask3);
         SubTask sTask7 = new SubTask("Дело 1", "", epicTask3);
-        SubTask sTask8 = new SubTask(sTask2, epicTask3);
+        SubTask sTask8 = new SubTask("Дело 2", "", epicTask3);
         mng.addSubTask(sTask7);
         mng.addSubTask(sTask8);
+        EpicTask epicTask4 = new EpicTask("Кое-что", "");       //Пример "таска" - нет подзадач
+        mng.addTask(epicTask4);
 
         ////////////////////////////
         System.out.println("ИСХОДНЫЕ ДАННЫЕ");
         ////////////////////////////
-        out = mng.getTasks(TaskStaging.ALL);                                                                            //2.1
+        out = mng.getAllTasks();                                                                                        //2.1
         output(mng, out);
         scanner.nextLine();
         ////////////////////////////
@@ -52,9 +58,13 @@ public class Main {
         ////////////////////////////
         sTask1.setStatus(TaskType.DONE);                                                                                //4
         sTask2.setStatus(TaskType.DONE);
+        sTask4.setStatus(TaskType.DONE);                                                                                //4
+        sTask5.setStatus(TaskType.DONE);
         mng.update(sTask1);                                                                                             //2.5
         mng.update(sTask2);
-        out = mng.getTasks(TaskStaging.ALL);                                                                            //2.1
+        mng.update(sTask4);                                                                                             //2.5
+        mng.update(sTask5);
+        out = mng.getAllTasks();                                                                                        //2.1
         output(mng, out);
         scanner.nextLine();
         ////////////////////////////
@@ -67,7 +77,8 @@ public class Main {
         ////////////////////////////
         mng.deleteSubTask(epicTask3, sTask8);                                                                           //2.6
         mng.deleteSubTask(epicTask, 1);
-        out = mng.getTasks(TaskStaging.ALL);                                                                            //2.1
+        mng.deleteSubTask(epicTask2, 3);
+        out = mng.getAllTasks();                                                                                        //2.1
         output(mng, out);
         scanner.nextLine();
         ////////////////////////////
@@ -79,8 +90,8 @@ public class Main {
         ////////////////////////////
         System.out.println("УДАЛЕНИЕ ВСЕХ ЗАДАЧ (ПОДЗАДАЧ)");
         ////////////////////////////
-        mng.deleteTasks(TaskStaging.SUBTASKS);                                                                          //2.2
-        out = mng.getTasks(TaskStaging.ALL);                                                                            //2.1
+        mng.deleteSubTasks();                                                                                           //2.2
+        out = mng.getAllTasks();                                                                                        //2.1
         output(mng, out);
         scanner.nextLine();
 
