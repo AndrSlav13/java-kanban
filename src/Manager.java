@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class Manager {
-    private HashMap<Integer, Task> tasksStore = new HashMap<>();  //A task to be staged
+    private HashMap<Integer, Task> tasksStore = new HashMap<>();  //Not Staged task
     private HashMap<Integer, EpicTask> epicTasksStore = new HashMap<>();  //A task to be staged
     private HashMap<Integer, SubTask> subTasksStore = new HashMap<>();    //Stages to do
 
@@ -73,7 +73,7 @@ public class Manager {
         return out;
     }
 
-    public void addTask(Task task) {   //Epic-task insertion
+    public void addTask(Task task) {   //Simple-task insertion
         task.setID(genID(task));
         Task simpleTask = new Task(task.getTitle(), task.getDescription());
         simpleTask.setID(task.toInt());
