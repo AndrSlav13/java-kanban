@@ -12,16 +12,10 @@ public class Main {
         Manager mng = new Manager();
         ArrayList<Task> out = new ArrayList<>();
 
-
 //Перед добавлением subtask необходимо добавить epic-task
-        //По ТЗ конкретный формат хранения задач не указан -
-        // используются 2 HashMap для хранения эпик-тасков и подзадач. Простая задача рассматривается
-        //как эпик-таск без подзадач. Иначе возникает несоответствие:
-        //если добавил эпик-таск без подзадач, то формально он является не эпик-таском
-        //Т.е. класс Task здесь используется только как абстрактный предок.
 
         EpicTask epicTask = new EpicTask("Дела перед уходом", "То, что надо не забыть сделать перед уходом на работу");
-        mng.addTask(epicTask);                                                                                          //2.4
+        mng.addEpicTask(epicTask);                                                                                          //2.4
         SubTask sTask1 = new SubTask("Выключить свет", "", epicTask);
         SubTask sTask2 = new SubTask("Покормить кота", "У него диета", epicTask);
         SubTask sTask3 = new SubTask("Взять ключи", "И от машины", epicTask);
@@ -30,7 +24,7 @@ public class Main {
         mng.addSubTask(sTask3);
 
         EpicTask epicTask2 = new EpicTask("Экономить электричество", "");
-        mng.addTask(epicTask2);
+        mng.addEpicTask(epicTask2);
         SubTask sTask4 = new SubTask("Дело 3", "", epicTask2);
         SubTask sTask5 = new SubTask("Купить диодные лампы", "Или люминесцентные", epicTask2);
         SubTask sTask6 = new SubTask("Починить проводку", "", epicTask2);
@@ -39,13 +33,16 @@ public class Main {
         mng.addSubTask(sTask6);
 
         EpicTask epicTask3 = new EpicTask("Сделать дела", "");
-        mng.addTask(epicTask3);
+        mng.addEpicTask(epicTask3);
         SubTask sTask7 = new SubTask("Дело 1", "", epicTask3);
         SubTask sTask8 = new SubTask("Дело 2", "", epicTask3);
         mng.addSubTask(sTask7);
         mng.addSubTask(sTask8);
-        EpicTask epicTask4 = new EpicTask("Кое-что", "");       //Пример "таска" - нет подзадач
-        mng.addTask(epicTask4);
+
+        Task task4 = new Task("Кое-что", "");
+        mng.addTask(task4);
+        Task task5 = new Task("Кое-что еще", "");
+        mng.addTask(task5);
 
         ////////////////////////////
         System.out.println("ИСХОДНЫЕ ДАННЫЕ");
@@ -60,10 +57,12 @@ public class Main {
         sTask2.setStatus(TaskType.DONE);
         sTask4.setStatus(TaskType.DONE);                                                                                //4
         sTask5.setStatus(TaskType.DONE);
+        task4.setStatus(TaskType.IN_PROGRESS);
         mng.update(sTask1);                                                                                             //2.5
         mng.update(sTask2);
         mng.update(sTask4);                                                                                             //2.5
         mng.update(sTask5);
+        mng.update(task4);
         out = mng.getAllTasks();                                                                                        //2.1
         output(mng, out);
         scanner.nextLine();
@@ -78,6 +77,7 @@ public class Main {
         mng.deleteSubTask(epicTask3, sTask8);                                                                           //2.6
         mng.deleteSubTask(epicTask, 1);
         mng.deleteSubTask(epicTask2, 3);
+        mng.deleteTask(task4.toInt());
         out = mng.getAllTasks();                                                                                        //2.1
         output(mng, out);
         scanner.nextLine();
@@ -90,7 +90,7 @@ public class Main {
         ////////////////////////////
         System.out.println("УДАЛЕНИЕ ВСЕХ ЗАДАЧ (ПОДЗАДАЧ)");
         ////////////////////////////
-        mng.deleteSubTasks();                                                                                           //2.2
+        mng.deleteTasks();                                                                                           //2.2
         out = mng.getAllTasks();                                                                                        //2.1
         output(mng, out);
         scanner.nextLine();

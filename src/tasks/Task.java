@@ -2,7 +2,7 @@ package tasks;
 
 import types.TaskType;
 
-public abstract class Task {
+public class Task {
     private int id;     //Unique id
     private TaskType status;
     private String title;
@@ -12,12 +12,6 @@ public abstract class Task {
         this.title = title;
         this.description = description;
         status = TaskType.NEW;
-        id = 0; //id==0 is not valid
-        //Task создается вне менеджера, а значение id ему присваивается только после выполнения его загрузки
-        //в менеджер функцией addTask/addSubTask.
-        //Значение id==0 недопустимо в менеджере, поэтому по умолчанию присваивается полю.
-        //В настоящей реализации программы это не важно - при вызове указанных функций присваивается новое значение,
-        //так сделано только для минимизации возможных ошибок в будущем.
     }
 
     public int toInt() {
