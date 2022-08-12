@@ -1,21 +1,19 @@
+import interfaces.TaskManager;
 import tasks.EpicTask;
 import tasks.SubTask;
 import tasks.Task;
 import types.TaskType;
 
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        Manager mng = new Manager();
-        ArrayList<Task> out = new ArrayList<>();
+        TaskManager mng = Managers.getDefault();
 
 //Перед добавлением subtask необходимо добавить epic-task
 
         EpicTask epicTask = new EpicTask("Дела перед уходом", "То, что надо не забыть сделать перед уходом на работу");
-        mng.addEpicTask(epicTask);                                                                                          //2.4
+        mng.addEpicTask(epicTask);
         SubTask sTask1 = new SubTask("Выключить свет", "", epicTask);
         SubTask sTask2 = new SubTask("Покормить кота", "У него диета", epicTask);
         SubTask sTask3 = new SubTask("Взять ключи", "И от машины", epicTask);
@@ -23,84 +21,29 @@ public class Main {
         mng.addSubTask(sTask2);
         mng.addSubTask(sTask3);
 
-        EpicTask epicTask2 = new EpicTask("Экономить электричество", "");
-        mng.addEpicTask(epicTask2);
-        SubTask sTask4 = new SubTask("Дело 3", "", epicTask2);
-        SubTask sTask5 = new SubTask("Купить диодные лампы", "Или люминесцентные", epicTask2);
-        SubTask sTask6 = new SubTask("Починить проводку", "", epicTask2);
-        mng.addSubTask(sTask4);
-        mng.addSubTask(sTask5);
-        mng.addSubTask(sTask6);
-
-        EpicTask epicTask3 = new EpicTask("Сделать дела", "");
-        mng.addEpicTask(epicTask3);
-        SubTask sTask7 = new SubTask("Дело 1", "", epicTask3);
-        SubTask sTask8 = new SubTask("Дело 2", "", epicTask3);
-        mng.addSubTask(sTask7);
-        mng.addSubTask(sTask8);
-
-        Task task4 = new Task("Кое-что", "");
-        mng.addTask(task4);
-        Task task5 = new Task("Кое-что еще", "");
-        mng.addTask(task5);
-
-        ////////////////////////////
-        System.out.println("ИСХОДНЫЕ ДАННЫЕ");
-        ////////////////////////////
-        out = mng.getAllTasks();                                                                                        //2.1
-        output(mng, out);
-        scanner.nextLine();
         ////////////////////////////
         System.out.println("ИЗМЕНЕНИЕ СТАТУСА ЗАДАЧИ И ОБНОВЛЕНИЕ");
         ////////////////////////////
-        sTask1.setStatus(TaskType.DONE);                                                                                //4
-        sTask2.setStatus(TaskType.DONE);
-        sTask4.setStatus(TaskType.DONE);                                                                                //4
-        sTask5.setStatus(TaskType.DONE);
-        task4.setStatus(TaskType.IN_PROGRESS);
-        mng.update(sTask1);                                                                                             //2.5
+        sTask1.setStatus(TaskType.DONE);
+        sTask2.setStatus(TaskType.NEW);
+        sTask3.setStatus(TaskType.IN_PROGRESS);
+
+        mng.update(sTask1);
         mng.update(sTask2);
-        mng.update(sTask4);                                                                                             //2.5
-        mng.update(sTask5);
-        mng.update(task4);
-        out = mng.getAllTasks();                                                                                        //2.1
-        output(mng, out);
-        scanner.nextLine();
+        mng.update(sTask3);
+
         ////////////////////////////
-        System.out.println("ПОЛУЧЕНИЕ ПО ИДЕНТИФИКАТОРУ");
+        System.out.println("ВЫВОД ИСТОРИИ");
         ////////////////////////////
-        System.out.println(mng.getTask(sTask2.toInt()));                                                                //2.3
-        scanner.nextLine();
-        ////////////////////////////
-        System.out.println("УДАЛЕНИЕ ПО ИДЕНТИФИКАТОРУ");
-        ////////////////////////////
-        mng.deleteSubTask(epicTask3, sTask8);                                                                           //2.6
-        mng.deleteSubTask(epicTask, 1);
-        mng.deleteSubTask(epicTask2, 3);
-        mng.deleteTask(task4.toInt());
-        out = mng.getAllTasks();                                                                                        //2.1
-        output(mng, out);
-        scanner.nextLine();
-        ////////////////////////////
-        System.out.println("ПОЛУЧЕНИЕ ПОДЗАДАЧ ЭПИКА");
-        ////////////////////////////
-        out = mng.getSubTasks(epicTask);                                                                                //3
-        output(mng, out);
-        scanner.nextLine();
-        ////////////////////////////
-        System.out.println("УДАЛЕНИЕ ВСЕХ ЗАДАЧ (ПОДЗАДАЧ)");
-        ////////////////////////////
-        mng.deleteTasks();                                                                                           //2.2
-        out = mng.getAllTasks();                                                                                        //2.1
-        output(mng, out);
-        scanner.nextLine();
+
+        mng.getTask(sTask1.toInt());
+        mng.getTask(sTask2.toInt());
+        mng.getTask(sTask3.toInt());
+
+        List<Task> out = mng.getHistory();
+        System.out.println(out);
 
         System.out.println("Конец");
 
-    }
-
-    public static void output(Manager mng, ArrayList<Task> list) {
-        for (Task task : list)
-            System.out.println(task);
     }
 }

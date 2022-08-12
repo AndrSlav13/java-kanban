@@ -3,6 +3,8 @@ tasksStore    - epic-tasks: tasks staged or considered as stand alone (not stage
 subTasksStore - subtasks as stages of epic-tasks
 **/
 
+import interfaces.HistoryManager;
+import interfaces.TaskManager;
 import tasks.EpicTask;
 import tasks.SubTask;
 import tasks.Task;
@@ -10,17 +12,45 @@ import types.TaskType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
-public class Manager {
-    private HashMap<Integer, Task> tasksStore = new HashMap<>();  //Not Staged task
-    private HashMap<Integer, EpicTask> epicTasksStore = new HashMap<>();  //A task to be staged
-    private HashMap<Integer, SubTask> subTasksStore = new HashMap<>();    //Stages to do
+public class InMemoryTaskManager implements TaskManager, HistoryManager {
+    private final HashMap<Integer, Task> tasksStore = new HashMap<>();  //Not Staged task
+    private final HashMap<Integer, EpicTask> epicTasksStore = new HashMap<>();  //A task to be staged
+    private final HashMap<Integer, SubTask> subTasksStore = new HashMap<>();    //Stages to do
 
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
+
+
+    @Override
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
+    }
+
+    @Override
+    public void add(Task task) {
+        historyManager.add(task);
+    }
+
+    @Override
     public Task getTask(final int id) {
-        if (tasksStore.containsKey(id)) return tasksStore.get(id);
-        if (epicTasksStore.containsKey(id)) return epicTasksStore.get(id);
-        if (subTasksStore.containsKey(id)) return subTasksStore.get(id);
+        Task task;
+        if (tasksStore.containsKey(id)) {
+            task = tasksStore.get(id);
+            historyManager.add(task);
+            return task;
+        }
+        if (epicTasksStore.containsKey(id)) {
+            task = epicTasksStore.get(id);
+            historyManager.add(task);
+            return task;
+        }
+        if (subTasksStore.containsKey(id)) {
+            task = subTasksStore.get(id);
+            historyManager.add(task);
+            return task;
+        }
         return null;
     }
 
@@ -30,6 +60,7 @@ public class Manager {
         return id;
     }
 
+    @Override
     public ArrayList<Task> getAllTasks() {
         ArrayList<Task> out = new ArrayList<>();
         for (EpicTask eTask : epicTasksStore.values()) {
@@ -41,6 +72,7 @@ public class Manager {
         return out;
     }
 
+    @Override
     public ArrayList<Task> getEpicTasks() {
         ArrayList<Task> out = new ArrayList<>();
         for (Task task : epicTasksStore.values())
@@ -48,6 +80,7 @@ public class Manager {
         return out;
     }
 
+    @Override
     public ArrayList<Task> getTasks() {
         ArrayList<Task> out = new ArrayList<>();
         for (Task task : tasksStore.values())
@@ -55,6 +88,7 @@ public class Manager {
         return out;
     }
 
+    @Override
     public ArrayList<Task> getSubTasks() {
         ArrayList<Task> out = new ArrayList<>();
         for (Task task : subTasksStore.values())
@@ -62,6 +96,7 @@ public class Manager {
         return out;
     }
 
+    @Override
     public ArrayList<Task> getSubTasks(EpicTask eTask) {
         ArrayList<Task> out = new ArrayList<>();
 
@@ -73,6 +108,7 @@ public class Manager {
         return out;
     }
 
+    @Override
     public void addTask(Task task) {   //Simple-task insertion
         task.setID(genID(task));
         Task simpleTask = new Task(task.getTitle(), task.getDescription());
@@ -80,6 +116,7 @@ public class Manager {
         tasksStore.put(task.toInt(), simpleTask);
     }
 
+    @Override
     public void addEpicTask(EpicTask eTask) {   //Epic-task insertion
         eTask.setID(genID(eTask));
         EpicTask epicTask = new EpicTask(eTask.getTitle(), eTask.getDescription());
@@ -87,6 +124,7 @@ public class Manager {
         epicTasksStore.put(eTask.toInt(), epicTask);
     }
 
+    @Override
     public void addSubTask(SubTask sTask) { //Subtask insertion
         int idEpic = sTask.getEpicTaskID();
         if (!epicTasksStore.containsKey(idEpic)) return;
@@ -99,10 +137,12 @@ public class Manager {
         update(subTask);
     }
 
+    @Override
     public void deleteTasks() {
         tasksStore.clear();
     }
 
+    @Override
     public void deleteEpicTasks() {
         for (int i : epicTasksStore.keySet()) {
             EpicTask eTask = epicTasksStore.get(i);
@@ -114,12 +154,14 @@ public class Manager {
         epicTasksStore.clear();
     }
 
+    @Override
     public void deleteSubTasks() {
         subTasksStore.clear();
         for (EpicTask eTask : epicTasksStore.values())
             eTask.removeReferences();
     }
 
+    @Override
     public void deleteTask(final int id) {
         Task simpleTask;
         EpicTask eTask;
@@ -143,6 +185,7 @@ public class Manager {
         }
     }
 
+    @Override
     public void deleteSubTask(EpicTask epicTask, SubTask subTask) {    //delete subtask by id EpicTask + id SubTask
         EpicTask eTask;
         eTask = epicTasksStore.get(epicTask.toInt());
@@ -155,6 +198,7 @@ public class Manager {
         if (!subTasks.isEmpty()) update(getTask(subTasks.get(0)));
     }
 
+    @Override
     public void deleteSubTask(EpicTask epicTask, final int indexSubTask) {  //delete subtask by index
         EpicTask eTask;
         eTask = epicTasksStore.get(epicTask.toInt());
@@ -206,6 +250,7 @@ public class Manager {
 
     }
 
+    @Override
     public void update(Task task) {
         if (epicTasksStore.values().contains(task)) {
             EpicTask eTask = epicTasksStore.get(task.toInt());
@@ -225,7 +270,6 @@ public class Manager {
 
     private boolean isEachStatusSubTasksThis(EpicTask eTask, final TaskType status) {
         for (int i : eTask.getSubTasksIDs()) {
-            TaskType ss = subTasksStore.get(i).getStatus();
             if (subTasksStore.get(i).getStatus() != status) {
                 return false;
             }
