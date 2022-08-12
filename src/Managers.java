@@ -2,6 +2,11 @@ import interfaces.HistoryManager;
 import interfaces.TaskManager;
 
 public class Managers {
+    private Managers() {
+    }
+
+    ;
+
     public static TaskManager getDefault() {
         return new InMemoryTaskManager();
     }
@@ -10,5 +15,4 @@ public class Managers {
         return new InMemoryHistoryManager();
     }
 
-    ;
 }

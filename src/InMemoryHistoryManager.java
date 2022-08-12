@@ -17,5 +17,4 @@ public class InMemoryHistoryManager implements HistoryManager {
         lastTasks.addTask(task);
     }
 
-    ;
 }

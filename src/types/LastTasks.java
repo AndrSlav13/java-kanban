@@ -2,11 +2,12 @@ package types;
 
 import tasks.Task;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class LastTasks {
-    private final int NUM_TASKS_TO_SAVE = 10;
+    private static final int NUM_TASKS_TO_SAVE = 10;
     private LinkedList<Task> lastTasks = new LinkedList<>();
 
     public void addTask(Task task) {
@@ -15,6 +16,6 @@ public class LastTasks {
     }
 
     public List<Task> getHistory() {
-        return lastTasks;
+        return new ArrayList<>(lastTasks);
     }
 }

@@ -21,6 +21,7 @@ public class Main {
         mng.addSubTask(sTask2);
         mng.addSubTask(sTask3);
 
+
         ////////////////////////////
         System.out.println("ИЗМЕНЕНИЕ СТАТУСА ЗАДАЧИ И ОБНОВЛЕНИЕ");
         ////////////////////////////
@@ -42,6 +43,16 @@ public class Main {
 
         List<Task> out = mng.getHistory();
         System.out.println(out);
+
+
+        System.out.println(mng.getAllTasks());
+        mng.deleteTask(sTask3.toInt());
+        System.out.println(mng.getAllTasks());
+        mng.deleteTask(sTask2.toInt());
+        System.out.println(mng.getAllTasks());
+        mng.deleteTask(sTask1.toInt());
+        System.out.println(mng.getAllTasks());
+
 
         System.out.println("Конец");
 
