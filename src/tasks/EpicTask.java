@@ -27,11 +27,6 @@ public class EpicTask extends Task {
         subTasks.clear();
     }
 
-    public void deleteSubTask(int index) {   //Remove subtask by index
-        if (index <= subTasks.size() && index > 0)
-            subTasks.remove(index - 1);
-    }
-
     @Override
     public void update(Task task) {
         this.setDescription(task.getDescription());

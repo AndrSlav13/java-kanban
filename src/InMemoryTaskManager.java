@@ -37,17 +37,17 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
         Task task;
         if (tasksStore.containsKey(id)) {
             task = tasksStore.get(id);
-            if (ins == true) historyManager.add(task);
+            if (ins) historyManager.add(task);
             return task;
         }
         if (epicTasksStore.containsKey(id)) {
             task = epicTasksStore.get(id);
-            if (ins == true) historyManager.add(task);
+            if (ins) historyManager.add(task);
             return task;
         }
         if (subTasksStore.containsKey(id)) {
             task = subTasksStore.get(id);
-            if (ins == true) historyManager.add(task);
+            if (ins) historyManager.add(task);
             return task;
         }
         return null;
@@ -67,12 +67,9 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
     @Override
     public List<Task> getAllTasks() {
         List<Task> out = new ArrayList<>();
-        for (EpicTask eTask : epicTasksStore.values()) {
-            out.add(eTask);
-            for (int i : eTask.getSubTasksIDs())
-                out.add(subTasksStore.get(i));
-        }
-        out.addAll(getTasks());
+        out.addAll(epicTasksStore.values());
+        out.addAll(tasksStore.values());
+        out.addAll(subTasksStore.values());
         return out;
     }
 
@@ -123,7 +120,7 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
         sTask.setID(genID(sTask));
         subTasksStore.put(sTask.toInt(), sTask);
         eTask.addSubTaskID(sTask.toInt());
-        update(getTaskCheckHistoryInserted(sTask.toInt(), false));
+        updateStatusEpicTask(idEpic);
     }
 
     @Override
@@ -142,7 +139,7 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
         subTasksStore.clear();
         for (EpicTask eTask : epicTasksStore.values()) {
             eTask.removeReferences();
-            eTask.setStatus(TaskType.NEW);
+            updateStatusEpicTask(eTask.toInt());
         }
     }
 
@@ -163,9 +160,7 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
             eTask = epicTasksStore.get(sTask.getEpicTaskID());
             eTask.removeReferenceToSubTask(sTask.toInt());
             subTasksStore.remove(id);
-            List<Integer> subTasks = eTask.getSubTasksIDs();
-            if (!subTasks.isEmpty()) update(getTaskCheckHistoryInserted(subTasks.get(0), false));
-            else eTask.setStatus(TaskType.NEW);
+            updateStatusEpicTask(eTask.toInt());
         }
         simpleTask = tasksStore.get(id);
         if (simpleTask != null) {
@@ -173,22 +168,28 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
         }
     }
 
-    private void setStatusSubTask(final int id, final TaskType status) {
-        SubTask sTask = subTasksStore.get(id);
-        sTask.setStatus(status);
+    private void updateStatusEpicTask(final int id) {
+        EpicTask eTask = epicTasksStore.get(id);
+        if(eTask == null) return;
+        if (!eTask.containsSubTasks()) {
+            eTask.setStatus(TaskType.NEW);
+            return;
+        }
+        int length = eTask.getSubTasksIDs().size();
+        int numTypes = TaskType.values().length;
+        int[] masType = new int[numTypes];
 
-        if (status == TaskType.DONE) {
-            EpicTask eTask = epicTasksStore.get(sTask.getEpicTaskID());
-            if (!isEachStatusSubTasksThis(eTask, TaskType.DONE)) eTask.setStatus(TaskType.IN_PROGRESS);
-            else eTask.setStatus(TaskType.DONE);
+        for (int i : eTask.getSubTasksIDs()) {
+            masType[subTasksStore.get(i).getStatus().getValue()] += 1;
         }
 
-        if (status == TaskType.NEW) {
-            EpicTask eTask = epicTasksStore.get(sTask.getEpicTaskID());
-            if (!isEachStatusSubTasksThis(eTask, TaskType.NEW)) eTask.setStatus(TaskType.IN_PROGRESS);
-            else eTask.setStatus(TaskType.NEW);
+        for (int i = 0; i < numTypes; ++i) {
+            if (masType[i] == length) {
+                eTask.setStatus(TaskType.getType(i));
+                return;
+            }
         }
-
+        eTask.setStatus(TaskType.IN_PROGRESS);
     }
 
     @Override
@@ -200,21 +201,12 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
         if (subTasksStore.containsKey(task.toInt())) {
             SubTask sTask = subTasksStore.get(task.toInt());
             sTask.update(task);
-            setStatusSubTask(sTask.toInt(), task.getStatus());
+            updateStatusEpicTask(epicTasksStore.get(sTask.getEpicTaskID()).toInt());
         }
         if (tasksStore.containsKey(task.toInt())) {
             Task simpleTask = tasksStore.get(task.toInt());
             simpleTask.update(task);
         }
-    }
-
-    private boolean isEachStatusSubTasksThis(EpicTask eTask, final TaskType status) {
-        for (int i : eTask.getSubTasksIDs()) {
-            if (subTasksStore.get(i).getStatus() != status) {
-                return false;
-            }
-        }
-        return true;
     }
 
 }
