@@ -29,25 +29,30 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
     }
 
     @Override
-    public void add(Task task) {
-        historyManager.add(task);
+    public void addHistoryTask(Task task) {
+        historyManager.addHistoryTask(task);
+    }
+
+    @Override
+    public void removeHistoryTask(int id) {
+        historyManager.removeHistoryTask(id);
     }
 
     private Task getTaskCheckHistoryInserted(final int id, boolean ins) {
         Task task;
         if (tasksStore.containsKey(id)) {
             task = tasksStore.get(id);
-            if (ins) historyManager.add(task);
+            if (ins) historyManager.addHistoryTask(task);
             return task;
         }
         if (epicTasksStore.containsKey(id)) {
             task = epicTasksStore.get(id);
-            if (ins) historyManager.add(task);
+            if (ins) historyManager.addHistoryTask(task);
             return task;
         }
         if (subTasksStore.containsKey(id)) {
             task = subTasksStore.get(id);
-            if (ins) historyManager.add(task);
+            if (ins) historyManager.addHistoryTask(task);
             return task;
         }
         return null;
@@ -125,17 +130,29 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
 
     @Override
     public void deleteTasks() {
+        for (int id : tasksStore.keySet()) {
+            removeHistoryTask(id);
+        }
         tasksStore.clear();
     }
 
     @Override
     public void deleteEpicTasks() {
+        for (int id : subTasksStore.keySet()) {
+            removeHistoryTask(id);
+        }
+        for (int id : epicTasksStore.keySet()) {
+            removeHistoryTask(id);
+        }
         subTasksStore.clear();
         epicTasksStore.clear();
     }
 
     @Override
     public void deleteSubTasks() {
+        for (int id : subTasksStore.keySet()) {
+            removeHistoryTask(id);
+        }
         subTasksStore.clear();
         for (EpicTask eTask : epicTasksStore.values()) {
             eTask.removeReferences();
@@ -145,13 +162,15 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
 
     @Override
     public void deleteTask(final int id) {
+        removeHistoryTask(id);
+
         Task simpleTask;
         EpicTask eTask;
         SubTask sTask;
         eTask = epicTasksStore.get(id);
         if (eTask != null) {
             for (int i : eTask.getSubTasksIDs())
-                subTasksStore.remove(i);
+                deleteTask(i);
             eTask.removeReferences();
             epicTasksStore.remove(id);
         }
@@ -170,7 +189,7 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
 
     private void updateStatusEpicTask(final int id) {
         EpicTask eTask = epicTasksStore.get(id);
-        if(eTask == null) return;
+        if (eTask == null) return;
         if (!eTask.containsSubTasks()) {
             eTask.setStatus(TaskType.NEW);
             return;

@@ -16,7 +16,7 @@ public class EpicTask extends Task {
     }
 
     public List<Integer> getSubTasksIDs() {
-        return subTasks;
+        return new ArrayList<Integer>(subTasks);
     }
 
     public void removeReferenceToSubTask(Integer id) {

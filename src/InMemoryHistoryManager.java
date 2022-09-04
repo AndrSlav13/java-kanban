@@ -1,11 +1,11 @@
 import interfaces.HistoryManager;
 import tasks.Task;
-import types.LastTasks;
+import types.CustomLinkedList;
 
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private LastTasks lastTasks = new LastTasks();
+    private final CustomLinkedList lastTasks = new CustomLinkedList();
 
     @Override
     public List<Task> getHistory() {
@@ -13,8 +13,12 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void add(Task task) {
-        lastTasks.addTask(task);
+    public void addHistoryTask(Task task) {
+        lastTasks.addLastTask(task);
     }
 
+    @Override
+    public void removeHistoryTask(int id) {
+        lastTasks.removeTask(id);
+    }
 }

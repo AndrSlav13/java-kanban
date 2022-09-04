@@ -3,7 +3,7 @@ package tasks;
 import types.TaskType;
 
 public class Task {
-    private int id;     //Unique id
+    private Integer id;     //Unique id
     private TaskType status;
     private String title;
     private String description;
@@ -67,6 +67,6 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return id;
+        return id.hashCode();
     }
 }
