@@ -1,9 +1,8 @@
-/*
+package tasks;/*
 NEW         - the task is just created
 IN_PROGRESS - the task is considered
 DONE        - the task is solved
 **/
-package types;
 
 public enum TaskType {
     NEW(0), IN_PROGRESS(1), DONE(2);

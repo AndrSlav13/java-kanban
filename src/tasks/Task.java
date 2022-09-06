@@ -1,6 +1,6 @@
 package tasks;
 
-import types.TaskType;
+import java.util.Objects;
 
 public class Task {
     private Integer id;     //Unique id
@@ -62,7 +62,7 @@ public class Task {
         if (this == o) return true;
         if (o == null) return false;
         Task task = (Task) o;
-        return id == task.id;
+        return Objects.equals(id, task.id);
     }
 
     @Override

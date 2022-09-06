@@ -1,6 +1,7 @@
+package managers;
+
 import interfaces.HistoryManager;
 import tasks.Task;
-import types.CustomLinkedList;
 
 import java.util.List;
 

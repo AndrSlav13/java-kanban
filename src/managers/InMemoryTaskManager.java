@@ -1,4 +1,4 @@
-/*
+package managers;/*
 tasksStore    - epic-tasks: tasks staged or considered as stand alone (not staged)
 subTasksStore - subtasks as stages of epic-tasks
 **/
@@ -8,7 +8,7 @@ import interfaces.TaskManager;
 import tasks.EpicTask;
 import tasks.SubTask;
 import tasks.Task;
-import types.TaskType;
+import tasks.TaskType;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package types;
+package managers;
 
 import tasks.Task;
 
@@ -20,11 +20,15 @@ public class CustomLinkedList {
         mapToList.put(task.toInt(), nodeHead);
     }
 
+    private void removeNode(Node node) {
+        node.removeNode();
+    }
+
     public boolean removeTask(int id) {
         Node nd = mapToList.get(id);
         if (nd != null) {
             if (nd == nodeHead) nodeHead = nodeHead.prev;
-            nd.removeNode();
+            removeNode(nd);
             mapToList.remove(id);
 
             return true;
