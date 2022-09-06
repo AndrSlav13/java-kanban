@@ -2,6 +2,7 @@ package managers;
 
 import interfaces.HistoryManager;
 import tasks.Task;
+import util.CustomLinkedList;
 
 import java.util.List;
 
