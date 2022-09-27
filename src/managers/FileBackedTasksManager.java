@@ -146,7 +146,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             str = inFile.readLine();
             if (!inFile.ready() && (str == null || str.trim().length() == 0)) return;
             for (int i : FileBackedTasksManager.historyFromString(str)) {
-                Task ts = super.getTask(i);
+                super.getTask(i);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
