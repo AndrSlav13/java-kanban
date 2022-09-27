@@ -67,14 +67,6 @@ public class Main {
         System.out.println("////////////////////////////");
         System.out.println("ВЫВОД ИСТОРИИ ПОСЛЕ УДАЛЕНИЯ ЧАСТИ ЗАДАЧ");
         System.out.println("////////////////////////////");
-        //Используется для проверки кода
-    /*
-        mng.deleteTask(sTask3.toInt());
-        mng.deleteTask(epicTask1.toInt());
-        mng.deleteTask(task1.toInt());
-        mng.deleteTask(epicTask1.toInt());
-
-    */
 
         out = mng.getHistory();
         for (Task task : out) System.out.println(task);

@@ -19,7 +19,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private String inputFile;
 
     private FileBackedTasksManager() {
-        ;
     }
 
     public FileBackedTasksManager(String file) {
@@ -33,9 +32,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
             inputFile = file;
         } catch (IOException ex) {
-            System.out.println("Check the filename " + "\"" + file + "\"");
             inputFile = null;
-            ex.printStackTrace();
+            throw new FileFormatException("Exception while file loading");
         }
     }
 
@@ -112,8 +110,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             outFile.newLine();
             outFile.write(historyToString(historyManager));
         } catch (IOException ex) {
-            ex.printStackTrace();
-            throw new ManagerSaveException("");
+            throw new ManagerSaveException("Exception while file storage");
         }
     }
 
