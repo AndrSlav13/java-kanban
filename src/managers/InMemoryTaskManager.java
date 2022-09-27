@@ -8,7 +8,7 @@ import interfaces.TaskManager;
 import tasks.EpicTask;
 import tasks.SubTask;
 import tasks.Task;
-import tasks.TaskType;
+import tasks.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,12 +16,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class InMemoryTaskManager implements TaskManager, HistoryManager {
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
     private final HashMap<Integer, Task> tasksStore = new HashMap<>();  //Not Staged task
     private final HashMap<Integer, EpicTask> epicTasksStore = new HashMap<>();  //A task to be staged
     private final HashMap<Integer, SubTask> subTasksStore = new HashMap<>();    //Stages to do
-
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
-
 
     @Override
     public List<Task> getHistory() {
@@ -191,11 +189,11 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
         EpicTask eTask = epicTasksStore.get(id);
         if (eTask == null) return;
         if (!eTask.containsSubTasks()) {
-            eTask.setStatus(TaskType.NEW);
+            eTask.setStatus(TaskStatus.NEW);
             return;
         }
         int length = eTask.getSubTasksIDs().size();
-        int numTypes = TaskType.values().length;
+        int numTypes = TaskStatus.values().length;
         int[] masType = new int[numTypes];
 
         for (int i : eTask.getSubTasksIDs()) {
@@ -204,11 +202,11 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
 
         for (int i = 0; i < numTypes; ++i) {
             if (masType[i] == length) {
-                eTask.setStatus(TaskType.getType(i));
+                eTask.setStatus(TaskStatus.getType(i));
                 return;
             }
         }
-        eTask.setStatus(TaskType.IN_PROGRESS);
+        eTask.setStatus(TaskStatus.IN_PROGRESS);
     }
 
     @Override

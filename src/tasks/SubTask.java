@@ -22,8 +22,14 @@ public class SubTask extends Task {
         idEpic = i;
     }
 
+    //id,type,name,status,description,epic
     @Override
     public String toString() {
-        return "\t" + super.toString(); //Indention for subtasks
+        StringBuilder sb = new StringBuilder(super.toString());
+        int i1 = sb.indexOf(",");
+        int i2 = sb.indexOf(",", i1 + 1);
+        sb.replace(i1 + 1, i2, "SUBTASK");
+        sb.append(this.getEpicTaskID());
+        return sb.toString();
     }
 }

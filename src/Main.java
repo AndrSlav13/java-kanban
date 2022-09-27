@@ -3,13 +3,17 @@ import managers.Managers;
 import tasks.EpicTask;
 import tasks.SubTask;
 import tasks.Task;
-import tasks.TaskType;
+import tasks.TaskStatus;
 
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager mng = Managers.getDefault();
+
+        //Варианты менеджера
+        //TaskManager mng = Managers.getDefault();                                      //Без сохранения в файл
+        TaskManager mng = Managers.getFileBackedWithInitialData("qwe.txt");        //Начальные данные из файла, сохранение в него же
+        //TaskManager mng = Managers.getFileBacked("qwe.txt");                          //Сохранение в файл без начальных данных
 
 //Перед добавлением subtask необходимо добавить epic-task
 
@@ -18,7 +22,7 @@ public class Main {
         Task task2 = new Task("Сделать спринт", "");
         mng.addTask(task2);
 
-        EpicTask epicTask1 = new EpicTask("Дела перед уходом", "То, что надо не забыть сделать перед уходом на работу");
+        EpicTask epicTask1 = new EpicTask("Дела перед уходом", "Не забыть сделать перед уходом на работу");
         mng.addEpicTask(epicTask1);
         SubTask sTask1 = new SubTask("Выключить свет", "", epicTask1);
         SubTask sTask2 = new SubTask("Покормить кота", "У него диета", epicTask1);
@@ -34,9 +38,9 @@ public class Main {
         ////////////////////////////
         //ИЗМЕНЕНИЕ СТАТУСА ЗАДАЧИ И ОБНОВЛЕНИЕ
         ////////////////////////////
-        sTask1.setStatus(TaskType.DONE);
-        sTask2.setStatus(TaskType.NEW);
-        sTask3.setStatus(TaskType.IN_PROGRESS);
+        sTask1.setStatus(TaskStatus.DONE);
+        sTask2.setStatus(TaskStatus.NEW);
+        sTask3.setStatus(TaskStatus.IN_PROGRESS);
 
         mng.update(sTask1);
         mng.update(sTask2);
@@ -63,11 +67,14 @@ public class Main {
         System.out.println("////////////////////////////");
         System.out.println("ВЫВОД ИСТОРИИ ПОСЛЕ УДАЛЕНИЯ ЧАСТИ ЗАДАЧ");
         System.out.println("////////////////////////////");
-
+        //Используется для проверки кода
+    /*
         mng.deleteTask(sTask3.toInt());
         mng.deleteTask(epicTask1.toInt());
         mng.deleteTask(task1.toInt());
         mng.deleteTask(epicTask1.toInt());
+
+    */
 
         out = mng.getHistory();
         for (Task task : out) System.out.println(task);

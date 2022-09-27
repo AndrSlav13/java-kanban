@@ -4,14 +4,14 @@ import java.util.Objects;
 
 public class Task {
     private Integer id;     //Unique id
-    private TaskType status;
+    private TaskStatus status;
     private String title;
     private String description;
 
     public Task(final String title, final String description) {
         this.title = title;
         this.description = description;
-        status = TaskType.NEW;
+        status = TaskStatus.NEW;
     }
 
     public int toInt() {
@@ -22,11 +22,11 @@ public class Task {
         this.id = id;
     }
 
-    public TaskType getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(final TaskType status) {
+    public void setStatus(final TaskStatus status) {
         this.status = status;
     }
 
@@ -52,9 +52,16 @@ public class Task {
         setStatus(task.status);
     }
 
+    //id,type,name,status,description,epic
     @Override
     public String toString() {
-        return "-- " + title + "  /" + description + "/" + " -- STATUS: " + status;
+        StringBuilder sb = new StringBuilder();
+        sb.append(id).append(", ");
+        sb.append("TASK").append(", ");
+        sb.append(title).append(", ");
+        sb.append(status.toString()).append(", ");
+        sb.append(description).append(", ");
+        return sb.toString();
     }
 
     @Override

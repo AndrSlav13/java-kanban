@@ -64,11 +64,6 @@ public class CustomLinkedList {
             return newNode;
         }
 
-        /*
-        Метод используется как делегат для метода
-         void removeNode(Node node)
-         из класса CustomLinkedList
-         */
         public void removeNode() {
             if (next != null)
                 next.prev = prev;

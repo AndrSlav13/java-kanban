@@ -41,17 +41,13 @@ public class EpicTask extends Task {
         return !subTasks.isEmpty();
     }
 
-    /*
-    equals(Object o) определен в родительском классе на основе сравнения id
-    id для всех задач разный - другие поля использовать нет смысла
-    Изначально hashCode() возвращал просто id - уникальное значение, после спринта решил,что лучше пусть будет id.hashCode() -
-    чтобы генерировался хэш-код (возможно в алгоритмах будет эффективнее выделяться память или id преобразуется к более удобному внутреннему виду - не знаю)
-    Но будет ли разница генерировать хэш на основе уникального id или для эпика id + subTasks - не уверен, но кажется лишним.
-     */
-
+    //id,type,name,status,description,epic
     @Override
     public String toString() {
-        String out = super.toString();
-        return out;
+        StringBuilder sb = new StringBuilder(super.toString());
+        int i1 = sb.indexOf(",");
+        int i2 = sb.indexOf(",", i1 + 1);
+        sb.replace(i1 + 1, i2, "EPICTASK");
+        return sb.toString();
     }
 }
