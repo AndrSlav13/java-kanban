@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -68,8 +69,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String title = str[2].trim();
         TaskStatus status = TaskStatus.valueOf(str[3].trim());
         String description = str[4].trim();
+        String duration = str[6].trim();
+        String zoneTime = str[5].trim();
         Integer idEpic = null;
-        if (str[5].trim().length() != 0) idEpic = Integer.valueOf(str[5].trim());
+        if (str[7].trim().length() != 0) idEpic = Integer.valueOf(str[7].trim());
         Task task = null;
         switch (TaskType.valueOf(type)) {
             case TASK:
@@ -87,6 +90,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
         task.setID(id);
         task.setStatus(status);
+        if (duration.length() != 0 && zoneTime.length() != 0) {
+            task.setStartTime(zoneTime);
+            task.setDuration(Duration.parse(duration).toMinutes());
+        }
         return task;
     }
 

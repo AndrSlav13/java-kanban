@@ -1,22 +1,31 @@
 package tasks;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class EpicTask extends Task {
 
     private List<Integer> subTasks = new ArrayList<>();
 
+    private Optional<ZonedDateTime> endTime = Optional.empty();
+
     public EpicTask(final String title, final String description) {
         super(title, description);
     }
 
-    public EpicTask(final String title) {
-        this(title, "");
-    }
-
     public List<Integer> getSubTasksIDs() {
         return new ArrayList<Integer>(subTasks);
+    }
+
+    public Optional<ZonedDateTime> getEndTime() {
+        if (endTime.isPresent()) return Optional.of(endTime.get());
+        else return Optional.empty();
+    }
+
+    public void setEndTime(Optional<ZonedDateTime> endTime) {
+        this.endTime = endTime;
     }
 
     public void removeReferenceToSubTask(Integer id) {

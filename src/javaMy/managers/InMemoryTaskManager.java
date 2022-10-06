@@ -3,6 +3,8 @@ tasksStore    - epic-tasks: tasks staged or considered as stand alone (not stage
 subTasksStore - subtasks as stages of epic-tasks
 **/
 
+import errors.FunctionParameterException;
+import errors.TaskIntersectionException;
 import interfaces.HistoryManager;
 import interfaces.TaskManager;
 import tasks.EpicTask;
@@ -10,16 +12,46 @@ import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStatus;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.time.Duration;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager, HistoryManager {
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
     private final HashMap<Integer, Task> tasksStore = new HashMap<>();  //Not Staged task
     private final HashMap<Integer, EpicTask> epicTasksStore = new HashMap<>();  //A task to be staged
     private final HashMap<Integer, SubTask> subTasksStore = new HashMap<>();    //Stages to do
+    private final String separator = ",";
+    private Comparator<Task> comparator = new Comparator<Task>() {
+        //isPresent() должен возвращать true!
+        private boolean isIntersection(Task task1, Task task2) {
+            if (task1.getStartTime().get().isBefore(task2.getStartTime().get()) &&
+                    task1.getEndTime().get().isAfter(task2.getStartTime().get())) return true;
+            if (task1.getStartTime().get().isBefore(task2.getEndTime().get()) &&
+                    task1.getEndTime().get().isAfter(task2.getEndTime().get())) return true;
+            if ((task1.getStartTime().get().isAfter(task2.getStartTime().get()) || task1.getStartTime().get().isEqual(task2.getStartTime().get())) &&
+                    (task1.getEndTime().get().isBefore(task2.getEndTime().get()) || task1.getEndTime().get().isEqual(task2.getEndTime().get())))
+                return true;
+            return false;
+        }
+
+        @Override
+        public int compare(Task task1, Task task2) {
+            if (task1.toInt() == task2.toInt()) return 0;
+            if (!task1.getStartTime().isPresent() && !task2.getStartTime().isPresent())
+                return task1.toInt() - task2.toInt();
+            if (task1.getStartTime().isPresent() && !task2.getStartTime().isPresent()) return -1;
+            if (!task1.getStartTime().isPresent() && task2.getStartTime().isPresent()) return 1;
+            if (isIntersection(task1, task2)) return 0;
+            if (task1.getStartTime().get().isBefore(task2.getStartTime().get())) return -1;
+            return 1;
+        }
+    };
+    protected final TreeSet<Task> prioritizedTasks = new TreeSet<>(comparator);
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList(prioritizedTasks);
+    }
 
     @Override
     public List<Task> getHistory() {
@@ -41,7 +73,7 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
         if (tasksStore.containsKey(id)) {
             task = tasksStore.get(id);
             if (ins) historyManager.addHistoryTask(task);
-            return task;
+            return (task);
         }
         if (epicTasksStore.containsKey(id)) {
             task = epicTasksStore.get(id);
@@ -105,25 +137,33 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
 
     @Override
     public void addTask(Task task) {   //Simple-task insertion
+        if (task == null) throw new FunctionParameterException("");
+        if (task.getTitle().contains(separator) ||
+                task.getDescription().contains(separator)) throw new FunctionParameterException("");
         task.setID(genID(task));
+        if (!prioritizedTasks.add(task)) throw new TaskIntersectionException("Tasks are to be solved one by one");
         tasksStore.put(task.toInt(), task);
     }
 
     @Override
     public void addEpicTask(EpicTask eTask) {   //Epic-task insertion
+        if (eTask == null) throw new NullPointerException();
         eTask.setID(genID(eTask));
         epicTasksStore.put(eTask.toInt(), eTask);
     }
 
     @Override
     public void addSubTask(SubTask sTask) { //Subtask insertion
+        if (sTask == null) throw new NullPointerException();
         int idEpic = sTask.getEpicTaskID();
         if (!epicTasksStore.containsKey(idEpic)) return;
         EpicTask eTask = epicTasksStore.get(idEpic);
         sTask.setID(genID(sTask));
+
+        if (!prioritizedTasks.add(sTask)) throw new TaskIntersectionException("Tasks are to be solved one by one");
         subTasksStore.put(sTask.toInt(), sTask);
         eTask.addSubTaskID(sTask.toInt());
-        updateStatusEpicTask(idEpic);
+        update(eTask);
     }
 
     @Override
@@ -154,7 +194,7 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
         subTasksStore.clear();
         for (EpicTask eTask : epicTasksStore.values()) {
             eTask.removeReferences();
-            updateStatusEpicTask(eTask.toInt());
+            update(eTask);
         }
     }
 
@@ -171,18 +211,22 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
                 deleteTask(i);
             eTask.removeReferences();
             epicTasksStore.remove(id);
+            return;
         }
         sTask = subTasksStore.get(id);
         if (sTask != null) {
             eTask = epicTasksStore.get(sTask.getEpicTaskID());
             eTask.removeReferenceToSubTask(sTask.toInt());
             subTasksStore.remove(id);
-            updateStatusEpicTask(eTask.toInt());
+            update(eTask);
+            return;
         }
         simpleTask = tasksStore.get(id);
         if (simpleTask != null) {
             tasksStore.remove(id);
+            return;
         }
+        throw new FunctionParameterException("wrong param");
     }
 
     private void updateStatusEpicTask(final int id) {
@@ -209,21 +253,48 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
         eTask.setStatus(TaskStatus.IN_PROGRESS);
     }
 
+    private void updateDateTimeEpicTask(final int id) {
+        EpicTask eTask = epicTasksStore.get(id);
+        if (eTask == null) return;
+        for (int t : eTask.getSubTasksIDs()) {
+            if (subTasksStore.get(t).getStartTime().isEmpty()) continue;
+            if (!eTask.getStartTime().isPresent() ||
+                    (subTasksStore.get(t).getStartTime().isPresent() &&
+                            eTask.getStartTime().get().isAfter(subTasksStore.get(t).getStartTime().get()))
+            )
+                eTask.setStartTime(subTasksStore.get(t).getStartTime().get().format(Task.formatter));
+            if (!eTask.getEndTime().isPresent() ||
+                    (subTasksStore.get(t).getEndTime().isPresent() &&
+                            eTask.getEndTime().get().isBefore(subTasksStore.get(t).getEndTime().get()))
+            )
+                eTask.setEndTime(subTasksStore.get(t).getEndTime());
+            if (eTask.getStartTime().isPresent() && eTask.getEndTime().isPresent())
+                eTask.setDuration((Duration.between(eTask.getStartTime().get(), eTask.getEndTime().get())).toMinutes());
+        }
+    }
+
     @Override
     public void update(Task task) {
+        if (task == null) throw new FunctionParameterException("null parameter is incorrect");
         if (epicTasksStore.containsKey(task.toInt())) {
             EpicTask eTask = epicTasksStore.get(task.toInt());
             eTask.update(task);
+            updateStatusEpicTask(task.toInt());
+            updateDateTimeEpicTask(task.toInt());
+            return;
         }
         if (subTasksStore.containsKey(task.toInt())) {
             SubTask sTask = subTasksStore.get(task.toInt());
             sTask.update(task);
-            updateStatusEpicTask(epicTasksStore.get(sTask.getEpicTaskID()).toInt());
+            update(epicTasksStore.get(sTask.getEpicTaskID()));
+            return;
         }
         if (tasksStore.containsKey(task.toInt())) {
             Task simpleTask = tasksStore.get(task.toInt());
             simpleTask.update(task);
+            return;
         }
+        throw new FunctionParameterException("id " + task.toInt() + " is incorrect");
     }
 
 }

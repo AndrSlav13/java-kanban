@@ -4,9 +4,19 @@ public class SubTask extends Task {
 
     private int idEpic;
 
+    public SubTask(String title, String description, EpicTask eTask, long duration, String startTime) {
+        super(title, description, duration, startTime);
+        idEpic = eTask.toInt();
+    }
+
     public SubTask(String title, String description, EpicTask eTask) {
         super(title, description);
         idEpic = eTask.toInt();
+    }
+
+    public SubTask(String title, String description, int idEpic, long duration, String startTime) {
+        super(title, description, duration, startTime);
+        this.idEpic = idEpic;
     }
 
     public SubTask(String title, String description, int idEpic) {

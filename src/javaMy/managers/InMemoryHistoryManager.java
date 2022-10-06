@@ -1,5 +1,6 @@
 package managers;
 
+import errors.FunctionParameterException;
 import interfaces.HistoryManager;
 import tasks.Task;
 import util.CustomLinkedList;
@@ -16,6 +17,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void addHistoryTask(Task task) {
+        if (task == null) throw new FunctionParameterException("wrong param");
         lastTasks.addLastTask(task);
     }
 

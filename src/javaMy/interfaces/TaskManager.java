@@ -13,6 +13,8 @@ import java.util.List;
 public interface TaskManager {
     Task getTask(final int id);
 
+    List<Task> getPrioritizedTasks();
+
     List<Task> getHistory();
 
     List<Task> getAllTasks();

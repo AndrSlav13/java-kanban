@@ -16,16 +16,16 @@ public class Main {
         //TaskManager mng = Managers.getFileBacked("qwe.txt");                          //Сохранение в файл без начальных данных
 
 //Перед добавлением subtask необходимо добавить epic-task
-
-        Task task1 = new Task("Выучить джава", "");
+// "dd.MM.yyyy| HH:mm"
+        Task task1 = new Task("Выучить джава", "", 12, "20.02.1023 | 20:30 | Asia/Dubai | +04:00");
         mng.addTask(task1);
         Task task2 = new Task("Сделать спринт", "");
         mng.addTask(task2);
 
         EpicTask epicTask1 = new EpicTask("Дела перед уходом", "Не забыть сделать перед уходом на работу");
         mng.addEpicTask(epicTask1);
-        SubTask sTask1 = new SubTask("Выключить свет", "", epicTask1);
-        SubTask sTask2 = new SubTask("Покормить кота", "У него диета", epicTask1);
+        SubTask sTask1 = new SubTask("Выключить свет", "", epicTask1, 12, "21.02.1023 | 20:30 | Asia/Dubai | +04:00");
+        SubTask sTask2 = new SubTask("Покормить кота", "У него диета", epicTask1, 12, "28.02.1023 | 02:20 | Asia/Dubai | +04:00");
         SubTask sTask3 = new SubTask("Взять ключи", "И от машины", epicTask1);
         mng.addSubTask(sTask1);
         mng.addSubTask(sTask2);
@@ -71,7 +71,12 @@ public class Main {
         out = mng.getHistory();
         for (Task task : out) System.out.println(task);
 
+        System.out.println("ВЫВОД ЗАДАЧ ПО ПРИОРИТЕТУ");
+        out = mng.getPrioritizedTasks();
+        for (Task task : out) System.out.println(task);
+
         System.out.println("Конец");
+        String ff = null;
 
     }
 }
