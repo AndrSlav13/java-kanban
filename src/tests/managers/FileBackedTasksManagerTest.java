@@ -23,8 +23,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         return new FileBackedTasksManager(titleFile);
     }
 
-    ;
-
     @AfterEach
     public void deleteFile() {
         Path path = Paths.get(titleFile);
