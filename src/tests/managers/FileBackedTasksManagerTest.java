@@ -29,7 +29,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         try {
             Files.deleteIfExists(path);
         } catch (IOException ex) {
-            throw new FileFormatException("");
+            throw new FileFormatException("error while file deletion");
         }
     }
 
@@ -51,7 +51,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
             mng.getTask(epic.toInt());
             mng.getTask(sTask2.toInt());
 
-            FileBackedTasksManager mng2 = FileBackedTasksManager.loadFromFile("FileBackedTasksManagerTest.txt");
+            FileBackedTasksManager mng2 = (FileBackedTasksManager) Managers.getFileBackedWithInitialData("FileBackedTasksManagerTest.txt");
             List<Task> mas = mng2.getHistory();
 
             assertEquals("Выключить свет", mas.get(3).getTitle());
@@ -74,7 +74,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
             Task task1 = new Task("Выучить джава", "zxc", 12, "28.02.0123 | 20:30 | Asia/Dubai | +04:00");
             mng.addTask(task1);
 
-            FileBackedTasksManager mng2 = FileBackedTasksManager.loadFromFile("FileBackedTasksManagerTest.txt");
+            FileBackedTasksManager mng2 = (FileBackedTasksManager) Managers.getFileBackedWithInitialData("FileBackedTasksManagerTest.txt");
             List<Task> mas = mng2.getHistory();
 
             assertEquals(0, mas.size());
@@ -83,7 +83,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         @Test
         public void checkNoTasks() {
 
-            FileBackedTasksManager mng2 = FileBackedTasksManager.loadFromFile("FileBackedTasksManagerTest.txt");
+            FileBackedTasksManager mng2 = (FileBackedTasksManager) Managers.getFileBackedWithInitialData("FileBackedTasksManagerTest.txt");
             List<Task> mas = mng2.getHistory();
 
             assertEquals(0, mas.size());
@@ -97,7 +97,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
             Task task1 = new Task("Выучить джава", "zxc", 12, "28.02.0123 | 20:30 | Asia/Dubai | +04:00");
             mng.addTask(task1);
 
-            FileBackedTasksManager mng2 = FileBackedTasksManager.loadFromFile("FileBackedTasksManagerTest.txt");
+            FileBackedTasksManager mng2 = (FileBackedTasksManager) Managers.getFileBackedWithInitialData("FileBackedTasksManagerTest.txt");
 
             assertEquals(0, mng2.getSubTasks().size());
         }

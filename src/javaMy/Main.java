@@ -1,22 +1,23 @@
 import interfaces.TaskManager;
-import managers.Managers;
+import managers.HttpTaskManager;
+import servers.kvServer.KVServer;
 import tasks.EpicTask;
 import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStatus;
 
+import java.net.URI;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
 
-        //Варианты менеджера
-        //TaskManager mng = Managers.getDefault();                                      //Без сохранения в файл
-        TaskManager mng = Managers.getFileBackedWithInitialData("qwe.txt");        //Начальные данные из файла, сохранение в него же
-        //TaskManager mng = Managers.getFileBacked("qwe.txt");                          //Сохранение в файл без начальных данных
+        String path = "http://localhost:8078";
+        KVServer kvServer = new KVServer();
+        kvServer.start();
+        URI url = URI.create(path);
+        TaskManager mng = new HttpTaskManager(url);
 
-//Перед добавлением subtask необходимо добавить epic-task
-// "dd.MM.yyyy| HH:mm"
         Task task1 = new Task("Выучить джава", "", 12, "20.02.1023 | 20:30 | Asia/Dubai | +04:00");
         mng.addTask(task1);
         Task task2 = new Task("Сделать спринт", "");
@@ -33,7 +34,6 @@ public class Main {
 
         EpicTask epicTask2 = new EpicTask("Эпик без подзадач", "без описания");
         mng.addEpicTask(epicTask2);
-
 
         ////////////////////////////
         //ИЗМЕНЕНИЕ СТАТУСА ЗАДАЧИ И ОБНОВЛЕНИЕ
@@ -68,6 +68,8 @@ public class Main {
         System.out.println("ВЫВОД ИСТОРИИ ПОСЛЕ УДАЛЕНИЯ ЧАСТИ ЗАДАЧ");
         System.out.println("////////////////////////////");
 
+        mng.deleteEpicTasks();
+
         out = mng.getHistory();
         for (Task task : out) System.out.println(task);
 
@@ -76,8 +78,6 @@ public class Main {
         for (Task task : out) System.out.println(task);
 
         System.out.println("Конец");
-        String ff = null;
-
     }
 }
 

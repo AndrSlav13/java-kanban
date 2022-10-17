@@ -16,10 +16,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private final static String standardTitle = "id,type,name,status,description,epic";
+    private final static String standardTitle = "id,type,name,status,description,datetime,duration,epicReference";
     private String inputFile;
 
-    private FileBackedTasksManager() {
+    protected FileBackedTasksManager() {
     }
 
     public FileBackedTasksManager(String file) {
@@ -36,12 +36,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             inputFile = null;
             throw new FileFormatException("Exception while file loading");
         }
-    }
-
-    public static FileBackedTasksManager loadFromFile(String title) {
-        FileBackedTasksManager fbtm = new FileBackedTasksManager(title);
-        fbtm.load(title);
-        return fbtm;
     }
 
     private static String historyToString(HistoryManager manager) {
@@ -97,7 +91,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return task;
     }
 
-    private void save() {
+    protected void save() {
         try (BufferedWriter outFile = new BufferedWriter(new FileWriter(inputFile, StandardCharsets.UTF_8))) {
             outFile.write(standardTitle);
             outFile.newLine();
@@ -137,7 +131,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void load(String file) throws FileFormatException {
+    protected void load(String file) throws FileFormatException {
         try (BufferedReader inFile = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
             String str = inFile.readLine();
             while (inFile.ready()) {    //load tasks

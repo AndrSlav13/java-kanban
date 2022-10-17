@@ -15,6 +15,8 @@ import tasks.TaskStatus;
 import java.time.Duration;
 import java.util.*;
 
+import static util.AdaptersAndFormat.formatter;
+
 public class InMemoryTaskManager implements TaskManager, HistoryManager {
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
     private final HashMap<Integer, Task> tasksStore = new HashMap<>();  //Not Staged task
@@ -65,7 +67,9 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
 
     @Override
     public void removeHistoryTask(int id) {
+
         historyManager.removeHistoryTask(id);
+        prioritizedTasks.remove(getTaskCheckHistoryInserted(id, false));
     }
 
     private Task getTaskCheckHistoryInserted(final int id, boolean ins) {
@@ -262,7 +266,7 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
                     (subTasksStore.get(t).getStartTime().isPresent() &&
                             eTask.getStartTime().get().isAfter(subTasksStore.get(t).getStartTime().get()))
             )
-                eTask.setStartTime(subTasksStore.get(t).getStartTime().get().format(Task.formatter));
+                eTask.setStartTime(subTasksStore.get(t).getStartTime().get().format(formatter));
             if (!eTask.getEndTime().isPresent() ||
                     (subTasksStore.get(t).getEndTime().isPresent() &&
                             eTask.getEndTime().get().isBefore(subTasksStore.get(t).getEndTime().get()))

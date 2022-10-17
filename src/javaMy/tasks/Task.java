@@ -4,12 +4,12 @@ import errors.FunctionParameterException;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
 
+import static util.AdaptersAndFormat.formatter;
+
 public class Task {
-    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy | HH:mm | VV | ZZZZZ");
     protected Optional<Duration> duration;
     protected Optional<ZonedDateTime> startTime;
     private Integer id;     //Unique id

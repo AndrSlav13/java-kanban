@@ -11,6 +11,7 @@ import tasks.EpicTask;
 import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStatus;
+import static util.AdaptersAndFormat.formatter;
 
 import java.util.List;
 
@@ -122,7 +123,7 @@ abstract class TaskManagerTest<T extends TaskManager & HistoryManager> {
             mng.update(subTaskUpdate);
             assertEquals(TaskStatus.DONE, mng.getTask(sTask1.toInt()).getStatus());
             assertEquals("qwerty", mng.getTask(sTask1.toInt()).getTitle());
-            assertEquals("13.05.2023 | 22:33 | Asia/Dubai | +04:00", mng.getTask(sTask1.toInt()).getStartTime().get().format(Task.formatter));
+            assertEquals("13.05.2023 | 22:33 | Asia/Dubai | +04:00", mng.getTask(sTask1.toInt()).getStartTime().get().format(formatter));
             assertEquals(123, mng.getTask(sTask1.toInt()).getDuration().get().toMinutes());
         }
 
