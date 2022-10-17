@@ -11,12 +11,11 @@ import tasks.SubTask;
 import tasks.Task;
 import util.AdaptersAndFormat;
 
-import static util.AdaptersAndFormat.formatter;
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static util.AdaptersAndFormat.formatter;
 import static util.AdaptersAndFormat.gson;
 
 public class HttpTaskManagerTest {
@@ -44,11 +43,11 @@ public class HttpTaskManagerTest {
         httpTaskServer = new HttpTaskServer(mng);
         httpTaskServer.start();
 
-        etask = new EpicTask("Выучить джава", "");
+        etask = new EpicTask("Вспомнить всё", "");
         mng.addEpicTask(etask);
         subtask = new SubTask("Выучить джава", "", etask.toInt(), 12, "28.02.2023 | 20:30 | Asia/Dubai | +04:00");
         mng.addSubTask(subtask);
-        task1 = new Task("Выучить джава", "", 12, "20.02.2022 | 20:30 | Asia/Dubai | +04:00");
+        task1 = new Task("Забыть джава", "", 12, "20.02.2022 | 20:30 | Asia/Dubai | +04:00");
         mng.addTask(task1);
         task2 = new Task("Сделать спринт", "");
         mng.addTask(task2);
@@ -71,7 +70,7 @@ public class HttpTaskManagerTest {
             List<EpicTask> list = gson.fromJson(client.load("/tasks/epic").body(), AdaptersAndFormat.epicListType);
             System.out.println("list");
             System.out.println(list);
-            assertEquals(list.get(0).getTitle(), etask.getTitle());
+            assertEquals(etask.getTitle(), list.get(0).getTitle());
         }
 
         @Test
@@ -82,14 +81,14 @@ public class HttpTaskManagerTest {
             List<EpicTask> list = gson.fromJson(client.load("/tasks").body(), AdaptersAndFormat.epicListType);
             System.out.println("list");
             System.out.println(list);
-            assertEquals(list.get(0).getTitle(), etask.getTitle());
-            assertEquals(list.size(), 1);
+            assertEquals(etask.getTitle(), list.get(0).getTitle());
+            assertEquals(1, list.size());
         }
 
         @Test
         public void checkGetIdEpicTasks() {
             EpicTask ep = gson.fromJson(client.load("/tasks/epic" + "?id=" + etask.toInt()).body(), EpicTask.class);
-            assertEquals(ep.getTitle(), etask.getTitle());
+            assertEquals(etask.getTitle(), ep.getTitle());
         }
     }
 
@@ -97,10 +96,10 @@ public class HttpTaskManagerTest {
     public class Tasks {
         @Test
         public void checkGetAllTasks() {
-            List<EpicTask> list = gson.fromJson(client.load("/tasks/task").body(), AdaptersAndFormat.epicListType);
+            List<Task> list = gson.fromJson(client.load("/tasks/task").body(), AdaptersAndFormat.epicListType);
             System.out.println("list");
             System.out.println(list);
-            assertEquals(list.get(0).getTitle(), task2.getTitle());
+            assertEquals(2, list.size());
         }
 
         @Test
@@ -111,14 +110,14 @@ public class HttpTaskManagerTest {
             List<Task> list = gson.fromJson(client.load("/tasks").body(), AdaptersAndFormat.taskListType);
             System.out.println("list");
             System.out.println(list);
-            assertEquals(list.get(0).getTitle(), task2.getTitle());
-            assertEquals(list.size(), 1);
+            assertEquals(task2.getTitle(), list.get(0).getTitle());
+            assertEquals(1, list.size());
         }
 
         @Test
         public void checkGetIdTasks() {
             Task ep = gson.fromJson(client.load("/tasks/task" + "?id=" + task2.toInt()).body(), Task.class);
-            assertEquals(ep.getTitle(), task2.getTitle());
+            assertEquals(task2.getTitle(), ep.getTitle());
         }
     }
 
@@ -129,7 +128,7 @@ public class HttpTaskManagerTest {
             List<SubTask> list = gson.fromJson(client.load("/tasks/subtask").body(), AdaptersAndFormat.subTaskListType);
             System.out.println("list");
             System.out.println(list);
-            assertEquals(list.get(0).getTitle(), subtask.getTitle());
+            assertEquals(subtask.getTitle(), list.get(0).getTitle());
         }
 
         @Test
@@ -140,13 +139,13 @@ public class HttpTaskManagerTest {
             List<SubTask> list = gson.fromJson(client.load("/tasks").body(), AdaptersAndFormat.subTaskListType);
             System.out.println("list");
             System.out.println(list);
-            assertEquals(list.size(), 0);
+            assertEquals(0, list.size());
         }
 
         @Test
         public void checkGetIdSubTasks() {
             Task ep = gson.fromJson(client.load("/tasks/subtask" + "?id=" + subtask.toInt()).body(), SubTask.class);
-            assertEquals(ep.getTitle(), subtask.getTitle());
+            assertEquals(subtask.getTitle(), ep.getTitle());
         }
     }
 
@@ -158,9 +157,9 @@ public class HttpTaskManagerTest {
             System.out.println("list");
             System.out.println(list);
             assertEquals(list.size(), 3);
-            assertEquals(list.get(0).getTitle(), etask.getTitle());
-            assertEquals(list.get(1).getTitle(), task2.getTitle());
-            assertEquals(list.get(2).getTitle(), subtask.getTitle());
+            assertEquals(etask.getTitle(), list.get(0).getTitle());
+            assertEquals(task2.getTitle(), list.get(1).getTitle());
+            assertEquals(subtask.getTitle(), list.get(2).getTitle());
         }
 
         @Test
@@ -171,7 +170,7 @@ public class HttpTaskManagerTest {
             System.out.println("list");
             System.out.println(list);
             assertEquals(1, list.size());
-            assertEquals(list.get(0).getTitle(), task2.getTitle());
+            assertEquals(task2.getTitle(), list.get(0).getTitle());
         }
 
         @Test
@@ -180,9 +179,9 @@ public class HttpTaskManagerTest {
             System.out.println("list");
             System.out.println(list);
             assertEquals(3, list.size());
-            assertEquals(list.get(0).getTitle(), task1.getTitle());
-            assertEquals(list.get(1).getTitle(), subtask.getTitle());
-            assertEquals(list.get(2).getTitle(), task2.getTitle());
+            assertEquals(task1.getTitle(), list.get(0).getTitle());
+            assertEquals(subtask.getTitle(), list.get(1).getTitle());
+            assertEquals(task2.getTitle(), list.get(2).getTitle());
         }
 
         @Test
@@ -192,7 +191,7 @@ public class HttpTaskManagerTest {
             System.out.println("list");
             System.out.println(list);
             assertEquals(1, list.size());
-            assertEquals(list.get(0).getTitle(), subtask.getTitle());
+            assertEquals(subtask.getTitle(), list.get(0).getTitle());
         }
     }
 
@@ -209,10 +208,10 @@ public class HttpTaskManagerTest {
             httpTaskServer.start();
 
             List<Task> list = gson.fromJson(client.load("/tasks").body(), AdaptersAndFormat.taskListType);
-            assertEquals(list.size(), 4);
+            assertEquals(4, list.size());
             list = gson.fromJson(client.load("/tasks/epic").body(), AdaptersAndFormat.taskListType);
-            assertEquals(list.size(), 1);
-            assertEquals(list.get(0).getTitle(), "Выучить джава");
+            assertEquals(1, list.size());
+            assertEquals("Вспомнить всё", list.get(0).getTitle());
             assertEquals("28.02.2023 | 20:30 | Asia/Dubai | +04:00", list.get(0).getStartTime().get().format(formatter));
 
         }
@@ -220,32 +219,32 @@ public class HttpTaskManagerTest {
     }
 
     @Nested
-    public class CheckUpdate{
+    public class CheckUpdate {
         @Test
         public void checkUpdate() {
-            assertEquals("Выучить джава", etask.getTitle());
+            assertEquals("Вспомнить всё", etask.getTitle());
             assertEquals("28.02.2023 | 20:30 | Asia/Dubai | +04:00", subtask.getStartTime().get().format(formatter));
             assertEquals("Сделать спринт", task2.getTitle());
 
             EpicTask epUp = new EpicTask("", "");
-                epUp.setID(etask.toInt());
-                epUp.setStatus(etask.getStatus());
-                epUp.setTitle("qwerty");
-                epUp.setDescription(etask.getDescription());
-                epUp.setDuration(etask.getDuration().get().toMinutes());
-                epUp.setStartTime(etask.getStartTime().get().format(formatter));
+            epUp.setID(etask.toInt());
+            epUp.setStatus(etask.getStatus());
+            epUp.setTitle("qwerty");
+            epUp.setDescription(etask.getDescription());
+            epUp.setDuration(etask.getDuration().get().toMinutes());
+            epUp.setStartTime(etask.getStartTime().get().format(formatter));
             SubTask sub = new SubTask("", "", 0);
-                sub.setID(subtask.toInt());
-                sub.setStatus(subtask.getStatus());
-                sub.setTitle(subtask.getTitle());
-                sub.setDescription(subtask.getDescription());
-                sub.setDuration(subtask.getDuration().get().toMinutes());
-                sub.setStartTime(subtask.getStartTime().get().minusDays(3).format(formatter));
+            sub.setID(subtask.toInt());
+            sub.setStatus(subtask.getStatus());
+            sub.setTitle(subtask.getTitle());
+            sub.setDescription(subtask.getDescription());
+            sub.setDuration(subtask.getDuration().get().toMinutes());
+            sub.setStartTime(subtask.getStartTime().get().minusDays(3).format(formatter));
             Task tas = new Task("", "");
-                tas.setID(task2.toInt());
-                tas.setStatus(task2.getStatus());
-                tas.setTitle("www");
-                tas.setDescription(task2.getDescription());
+            tas.setID(task2.toInt());
+            tas.setStatus(task2.getStatus());
+            tas.setTitle("www");
+            tas.setDescription(task2.getDescription());
 
             client.put("/tasks/epic", gson.toJson(epUp));
             client.put("/tasks/subtask", gson.toJson(sub));
@@ -257,6 +256,29 @@ public class HttpTaskManagerTest {
             assertEquals("qwerty", eGot.getTitle());
             assertEquals("25.02.2023 | 20:30 | Asia/Dubai | +04:00", sGot.getStartTime().get().format(formatter));
             assertEquals("www", tGot.getTitle());
+        }
+    }
+
+    @Nested
+    public class checkPutClient {
+        @Test
+        public void checkPutEpic() {
+            client.delete("/tasks/epic");
+            client.delete("/tasks/task");
+            client.delete("/tasks/subtask");
+            client.post("/tasks/epic", gson.toJson(etask, EpicTask.class));
+            client.post("/tasks/task", gson.toJson(task2, Task.class));
+            subtask.setEpicTaskID(etask.toInt());
+            client.post("/tasks/subtask", gson.toJson(subtask, SubTask.class));
+            List<SubTask> list = gson.fromJson(client.load("/tasks/subtask").body(), AdaptersAndFormat.subTaskListType);
+            assertEquals(1, list.size());
+            assertEquals(etask.toInt(), list.get(0).getEpicTaskID());
+            List<Task> list2 = gson.fromJson(client.load("/tasks/task").body(), AdaptersAndFormat.taskListType);
+            assertEquals(1, list2.size());
+            assertEquals(task2.getTitle(), list2.get(0).getTitle());
+            List<EpicTask> list3 = gson.fromJson(client.load("/tasks/epic").body(), AdaptersAndFormat.epicListType);
+            assertEquals(1, list3.size());
+            assertEquals(etask.getTitle(), list3.get(0).getTitle());
         }
     }
 

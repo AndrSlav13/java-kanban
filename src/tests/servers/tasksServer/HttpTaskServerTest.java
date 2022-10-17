@@ -10,7 +10,6 @@ import tasks.SubTask;
 import tasks.Task;
 import util.AdaptersAndFormat;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpResponse;
 import java.util.List;
@@ -22,7 +21,6 @@ class HttpTaskServerTest {
     String path = "http://localhost:8078";
     String pathReq = "http://localhost:8080";
     clientForTests client = new clientForTests(pathReq);
-    clientForTests clientKV = new clientForTests(path);
     TaskManager mng;
     KVServer kvServer;
     HttpTaskServer httpTaskServer;
@@ -36,7 +34,7 @@ class HttpTaskServerTest {
     }
 
     @BeforeEach
-    public void setResources() throws IOException {
+    public void setResources() {
         kvServer = new KVServer();
         kvServer.start();
         URI url = URI.create(path);
@@ -72,8 +70,6 @@ class HttpTaskServerTest {
             assertEquals(200, response.statusCode());
             response = client.load("/tasks/epicus");
             assertEquals(400, response.statusCode());
-            response = clientKV.load("/register");
-            long reg = Long.parseLong(response.body());
             List<Task> list = gson.fromJson(client.load("/tasks").body(), AdaptersAndFormat.taskListType);
             assertEquals(4, list.size());
 

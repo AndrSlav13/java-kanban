@@ -11,11 +11,11 @@ import tasks.EpicTask;
 import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStatus;
-import static util.AdaptersAndFormat.formatter;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static util.AdaptersAndFormat.formatter;
 
 abstract class TaskManagerTest<T extends TaskManager & HistoryManager> {
     T mng;
