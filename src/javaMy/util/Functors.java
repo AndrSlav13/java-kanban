@@ -19,8 +19,14 @@ public class Functors {
         int id = task.toInt();
         mng.addTask(task);
         task.setID(id); //При добавлении id был сгенерирован другой!
-        System.out.println(task);
         return "task added";
+    };
+    //Update task
+    public Function<String, Object> putTask = str -> {
+        Task task = gson.fromJson(str, Task.class);
+        int id = task.toInt();
+        mng.getTask(id).update(task);
+        return "task updated";
     };
     //Delete task
     public Function<Integer, Object> deleteTask = i -> {
@@ -33,7 +39,6 @@ public class Functors {
     public Function<Integer, Object> getTask = i -> {
         Task task = mng.getTask(i);
         if (task.getClass() != Task.class) throw new RuntimeException("No task with id=" + i);
-        System.out.println(task);
         return task;
     };
     //Get all tasks
@@ -50,8 +55,14 @@ public class Functors {
         int id = task.toInt();
         mng.addEpicTask(task);
         task.setID(id);
-        System.out.println(task);
         return "epic added";
+    };
+    //Update task
+    public Function<String, Object> putEpic = str -> {
+        EpicTask task = gson.fromJson(str, EpicTask.class);
+        int id = task.toInt();
+        mng.getTask(id).update(task);
+        return "epic updated";
     };
     //Delete task
     public Function<Integer, Object> deleteEpic = i -> {
@@ -64,7 +75,6 @@ public class Functors {
     public Function<Integer, Object> getEpic = i -> {
         Task task = mng.getTask(i);
         if (task.getClass() != EpicTask.class) throw new RuntimeException("No epic with id=" + i);
-        System.out.println(task);
         return task;
     };
     //Get all tasks
@@ -81,8 +91,14 @@ public class Functors {
         int id = task.toInt();
         mng.addSubTask(task);
         task.setID(id);
-        System.out.println(task);
         return "subtask added";
+    };
+    //Update task
+    public Function<String, Object> putSubTask = str -> {
+        SubTask task = gson.fromJson(str, SubTask.class);
+        int id = task.toInt();
+        mng.getTask(id).update(task);
+        return "subtask updated";
     };
     //Delete task
     public Function<Integer, Object> deleteSub = i -> {
@@ -95,7 +111,6 @@ public class Functors {
     public Function<Integer, Object> getSub = i -> {
         Task task = mng.getTask(i);
         if (task.getClass() != SubTask.class) throw new RuntimeException("No subtask with id=" + i);
-        System.out.println(task);
         return task;
     };
     //Get all tasks

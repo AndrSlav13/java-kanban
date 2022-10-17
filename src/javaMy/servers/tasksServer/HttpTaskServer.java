@@ -24,12 +24,12 @@ public class HttpTaskServer {
 
         Functors f = new Functors(mng);
         List<TasksHandlerBase> listH = List.of(
-                new TasksHandler("/tasks", null, null, null, f.getAll, f.deleteAll),
-                new TasksHandler("/tasks/task", f.addTask, f.deleteTask, f.getTask, f.getAllTasks, f.deleteAllTasks),
-                new TasksHandler("/tasks/subtask", f.addSub, f.deleteSub, f.getSub, f.getAllSubs, f.deleteAllSubs),
-                new TasksHandler("/tasks/epic", f.addEpic, f.deleteEpic, f.getEpic, f.getAllEpics, f.deleteAllEpics),
-                new TasksHandler("/tasks/history", null, null, null, f.getAllHistory, null),
-                new TasksHandler("/tasks/priority", null, null, null, f.getAllPrioritised, null)
+                new TasksHandler("/tasks", null, null, null, f.getAll, f.deleteAll, null),
+                new TasksHandler("/tasks/task", f.addTask, f.deleteTask, f.getTask, f.getAllTasks, f.deleteAllTasks, f.putTask),
+                new TasksHandler("/tasks/subtask", f.addSub, f.deleteSub, f.getSub, f.getAllSubs, f.deleteAllSubs, f.putSubTask),
+                new TasksHandler("/tasks/epic", f.addEpic, f.deleteEpic, f.getEpic, f.getAllEpics, f.deleteAllEpics, f.putEpic),
+                new TasksHandler("/tasks/history", null, null, null, f.getAllHistory, null, null),
+                new TasksHandler("/tasks/priority", null, null, null, f.getAllPrioritised, null, null)
         );
 
         for (TasksHandlerBase h : listH)

@@ -15,17 +15,20 @@ import java.util.regex.Matcher;
 import static util.AdaptersAndFormat.gson;
 
 class TasksHandler extends TasksHandlerBase implements HttpHandler {
-    public TasksHandler(String context, Function<String, Object> post,
+    public TasksHandler(String context,
+                        Function<String, Object> post,
                         Function<Integer, Object> delete,
                         Function<Integer, Object> get,
                         Supplier<Object> getAll,
-                        Supplier<Object> deleteAll) {
+                        Supplier<Object> deleteAll,
+                        Function<String, Object> put) {
         super(context);
         this.post = post;
         this.delete = delete;
         this.get = get;
         this.getAll = getAll;
         this.deleteAll = deleteAll;
+        this.put = put;
     }
 
     @Override
@@ -53,6 +56,18 @@ class TasksHandler extends TasksHandlerBase implements HttpHandler {
             InputStream is = httpExchange.getRequestBody();
             String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             return gson.toJson(post.apply(body));
+        }
+        throw new HttpRequestFormatException("check request '" + path + "' format");
+    }
+
+    @Override
+    protected String isPUT(String path, HttpExchange httpExchange) throws IOException {
+        Matcher match = patt.matcher(path);
+        if (match.find()) {
+            if (put == null) throw new HttpRequestUserException("The request is not allowed");
+            InputStream is = httpExchange.getRequestBody();
+            String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            return gson.toJson(put.apply(body));
         }
         throw new HttpRequestFormatException("check request '" + path + "' format");
     }

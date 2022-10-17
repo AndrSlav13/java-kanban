@@ -36,7 +36,7 @@ public class HttpTaskManagerTest {
     }
 
     @BeforeEach
-    public void setResources() throws IOException {
+    public void setResources() {
         kvServer = new KVServer();
         kvServer.start();
         URI url = URI.create(path);
@@ -217,6 +217,47 @@ public class HttpTaskManagerTest {
 
         }
 
+    }
+
+    @Nested
+    public class CheckUpdate{
+        @Test
+        public void checkUpdate() {
+            assertEquals("Выучить джава", etask.getTitle());
+            assertEquals("28.02.2023 | 20:30 | Asia/Dubai | +04:00", subtask.getStartTime().get().format(formatter));
+            assertEquals("Сделать спринт", task2.getTitle());
+
+            EpicTask epUp = new EpicTask("", "");
+                epUp.setID(etask.toInt());
+                epUp.setStatus(etask.getStatus());
+                epUp.setTitle("qwerty");
+                epUp.setDescription(etask.getDescription());
+                epUp.setDuration(etask.getDuration().get().toMinutes());
+                epUp.setStartTime(etask.getStartTime().get().format(formatter));
+            SubTask sub = new SubTask("", "", 0);
+                sub.setID(subtask.toInt());
+                sub.setStatus(subtask.getStatus());
+                sub.setTitle(subtask.getTitle());
+                sub.setDescription(subtask.getDescription());
+                sub.setDuration(subtask.getDuration().get().toMinutes());
+                sub.setStartTime(subtask.getStartTime().get().minusDays(3).format(formatter));
+            Task tas = new Task("", "");
+                tas.setID(task2.toInt());
+                tas.setStatus(task2.getStatus());
+                tas.setTitle("www");
+                tas.setDescription(task2.getDescription());
+
+            client.put("/tasks/epic", gson.toJson(epUp));
+            client.put("/tasks/subtask", gson.toJson(sub));
+            client.put("/tasks/task", gson.toJson(tas));
+
+            EpicTask eGot = gson.fromJson(client.load("/tasks/epic?id=" + etask.toInt()).body(), EpicTask.class);
+            SubTask sGot = gson.fromJson(client.load("/tasks/subtask?id=" + subtask.toInt()).body(), SubTask.class);
+            Task tGot = gson.fromJson(client.load("/tasks/task?id=" + task2.toInt()).body(), Task.class);
+            assertEquals("qwerty", eGot.getTitle());
+            assertEquals("25.02.2023 | 20:30 | Asia/Dubai | +04:00", sGot.getStartTime().get().format(formatter));
+            assertEquals("www", tGot.getTitle());
+        }
     }
 
 }

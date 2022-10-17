@@ -24,6 +24,7 @@ public abstract class TasksHandlerBase implements HttpHandler {
     protected Function<Integer, Object> get = null;
     protected Supplier<Object> getAll = null;
     protected Supplier<Object> deleteAll = null;
+    protected Function<String, Object> put = null;
 
 
     protected TasksHandlerBase(String context) {
@@ -37,6 +38,10 @@ public abstract class TasksHandlerBase implements HttpHandler {
     }
 
     protected String isPOST(String path, HttpExchange httpExchange) throws IOException {
+        throw new HttpRequestUserException("the request isn't allowed");
+    }
+
+    protected String isPUT(String path, HttpExchange httpExchange) throws IOException {
         throw new HttpRequestUserException("the request isn't allowed");
     }
 
@@ -72,6 +77,10 @@ public abstract class TasksHandlerBase implements HttpHandler {
                     break;
                 case "DELETE":
                     rezult = isDELETE(path, httpExchange);
+                    codeRespond = 200;
+                    break;
+                case "PUT":
+                    rezult = isPUT(path, httpExchange);
                     codeRespond = 200;
                     break;
                 default:

@@ -24,12 +24,39 @@ public class clientForTests {
         }
     }
 
-    public HttpResponse<String> put(String param, String json) {
+    public HttpResponse<String> post(String param, String json) {
         HttpResponse<String> response = null;
         try {
             URI uri = URI.create(uriToServer.toString() + param);
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
             HttpRequest request = requestBuilder.POST(HttpRequest.BodyPublishers.ofString(json))    // указываем HTTP-метод запроса
+                    .uri(uri) // указываем адрес ресурса
+                    .version(HttpClient.Version.HTTP_1_1) // указываем версию протокола HTTP
+                    .header("Accept", "application/json") // указываем заголовок Accept
+                    .header("Accept", "text/plain") // указываем заголовок Accept
+                    .header("Content-Type", "application/json") // указываем заголовок Accept
+                    .build(); // заканчиваем настройку и создаём ("строим") HTTP-запрос
+            HttpClient client = HttpClient.newHttpClient();
+            // получаем стандартный обработчик тела запроса с конвертацией содержимого в строку
+            HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+            // отправляем запрос и получаем ответ от сервера
+            response = client.send(request, handler);
+
+        } catch (IOException | InterruptedException ex) {
+            ex.printStackTrace();
+            throw new HttpRequestUserException("Unable to create client");
+        } catch (HttpRequestUserException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return response;
+    }
+
+    public HttpResponse<String> put(String param, String json) {
+        HttpResponse<String> response = null;
+        try {
+            URI uri = URI.create(uriToServer.toString() + param);
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
+            HttpRequest request = requestBuilder.PUT(HttpRequest.BodyPublishers.ofString(json))    // указываем HTTP-метод запроса
                     .uri(uri) // указываем адрес ресурса
                     .version(HttpClient.Version.HTTP_1_1) // указываем версию протокола HTTP
                     .header("Accept", "application/json") // указываем заголовок Accept
